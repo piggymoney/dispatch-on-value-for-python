@@ -86,6 +86,18 @@ class DispatchOnValue(object):
 
         return wrap
 
+
+    def dispatch_all(self, stream, *args, **kwargs):
+        results = []
+        for f, pat in self.functions:
+            matched, matched_stream = self._match(stream, pat, {}, {})
+            if matched:
+                results.append(f(matched_stream, *args, **kwargs))
+
+        if not results:
+            raise DispatchFailed()
+        return results
+
     def dispatch(self, stream, *args, **kwargs):
         """
         Dispatch to function held internally depending upon the value of stream.
